@@ -23,6 +23,7 @@ pub struct PublicAccount {
     avatar_url: String,
     display_name: String,
     public_id: String,
+    followers: Vec<String>
 }
 
 pub async fn validate_user_token(postgres_client: &tokio_postgres::Client, token: &String) -> Result<bool, Box<dyn std::error::Error>> {
@@ -53,6 +54,7 @@ async fn get_public_info(_req: HttpRequest, path: web::Path<(String,)>) -> Resul
                     avatar_url,
                     public_id,
                     oauth_type,
+                    followers
                 FROM
                     users
                 WHERE
@@ -66,7 +68,8 @@ async fn get_public_info(_req: HttpRequest, path: web::Path<(String,)>) -> Resul
                         username: user_query[0].get(1),
                         avatar_url: user_query[0].get(2),
                         public_id: user_query[0].get(3),
-                        oauth_type: user_query[0].get(4)
+                        oauth_type: user_query[0].get(4),
+                        followers: user_query[0].get(5)
                     };
 
                     Ok(HttpResponse::Ok().json(&public_user))
@@ -104,7 +107,7 @@ async fn get_personal_info(_req: HttpRequest) -> Result<impl Responder, Box<dyn 
                 public_id: query[0].get(6),
                 joined_groups: query[0].get(7),
                 joined_events: query[0].get(8),
-                followers: vec![]
+                followers: query[0].get(9) 
             };
             Ok(HttpResponse::Ok().json(&user))
         },

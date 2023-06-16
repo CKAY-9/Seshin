@@ -48,6 +48,26 @@ a {
     }
 }
 
+button {
+    width: fit-content;
+    padding: 1rem;
+    background-color: rgb(var(--fg));
+    font-size: 1rem;
+    border: none;
+
+    &.noBG {
+        background-color: transparent;
+    }
+
+    &.noPadding {
+        padding: 0;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
 .container {
     margin: 5rem 25rem;
     display: flex;

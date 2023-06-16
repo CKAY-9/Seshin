@@ -1,6 +1,7 @@
 import {fetchPersonalData, fetchPublicProfile} from "@/api/user/fetching";
 import Header from "@/components/header/header";
 import Image from "next/image";
+import {FollowersButton} from "./client";
 
 const UserServer = async (props: { params: { slug: string } }) => {
     let personalData = await fetchPersonalData();
@@ -9,6 +10,16 @@ const UserServer = async (props: { params: { slug: string } }) => {
         userData = personalData;
     } else {
         userData = await fetchPublicProfile("", props.params.slug);
+    }
+
+    if (userData === undefined) {
+        return (
+            <>
+                <main className="container">
+                    <h1>Couldn't find user "{props.params.slug}"</h1>
+                </main>
+            </>
+        );     
     }
     
     return (
@@ -36,8 +47,9 @@ const UserServer = async (props: { params: { slug: string } }) => {
                         style={{"width": "auto", "height": "2rem", "filter": "invert(1)", "opacity": "0.5"}}
                     />
                 </section>
-                <h3 style={{"margin": "2rem 0 0 0", "opacity": "0.5"}}>Username: @{userData?.username}</h3>
-                <h3 style={{"margin": "0", "opacity": "0.5"}}>Public ID: {userData?.public_id}</h3>
+                <h3 style={{"margin": "2rem 0 0 0", "opacity": "0.5", "fontSize": "1rem"}}>Username: @{userData?.username}</h3>
+                <h3 style={{"margin": "0 0 2rem 0", "opacity": "0.5", "fontSize": "1rem"}}>Public ID: {userData?.public_id}</h3>
+                <FollowersButton followers={userData?.followers}></FollowersButton>    
             </main>
         </>
     );        

@@ -7,7 +7,8 @@ export interface PersonalUser {
     joined_events: string[],
     token: string,
     public_id: string,
-    oauth_type: string
+    oauth_type: string,
+    followers: string[]
 }
 
 export interface PublicUser {
@@ -15,5 +16,6 @@ export interface PublicUser {
     avatar_url: string,
     public_id: string,
     oauth_type: string,
-    display_name: string
+    display_name: string,
+    followers: string[]
 }

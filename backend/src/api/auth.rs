@@ -33,6 +33,31 @@ struct DiscordUserRes {
     email: String
 }
 
+#[derive(Serialize, Deserialize)]
+struct GithubAuthRes {
+    code: String
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct GithubInitialRes {
+    access_token: String,
+    scope: String,
+    token_type: String
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct GithubUserRes {
+    login: String,
+    avatar_url: String,
+    id: u64 
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct GithubUserEmail {
+    email: String,
+    primary: bool
+}
+
 async fn fetch_discord(data: DiscordInitialReq, endpoint: &String) -> Result<String, Box<dyn std::error::Error>> {
     let mut initial_mapped = HashMap::new();
     initial_mapped.insert("client_id", data.client_id);
@@ -163,31 +188,6 @@ async fn auth_discord(req: web::Query<DiscordAuthRes>, _req: HttpRequest) -> imp
     login_url_finish.push_str(format!("/login?token={}", token).as_str());
 
     Redirect::to(login_url_finish).see_other()
-}
-
-#[derive(Serialize, Deserialize)]
-struct GithubAuthRes {
-    code: String
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct GithubInitialRes {
-    access_token: String,
-    scope: String,
-    token_type: String
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct GithubUserRes {
-    login: String,
-    avatar_url: String,
-    id: u64 
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-struct GithubUserEmail {
-    email: String,
-    primary: bool
 }
 
 async fn fetch_github(code: String) -> Result<String, Box<dyn std::error::Error>> {

@@ -6,6 +6,7 @@ use serde::{Serialize, Deserialize};
 pub mod auth;
 pub mod user;
 pub mod search;
+pub mod event;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DefaultResponse {
@@ -21,5 +22,6 @@ pub fn config_api(cfg: &mut web::ServiceConfig) {
             .configure(auth::config_auth)
             .configure(user::config_user)
             .configure(search::config_search)
+            .configure(event::config_events)
     );
 }

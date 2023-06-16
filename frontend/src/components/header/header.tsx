@@ -18,6 +18,12 @@ const Header = (props: {user: PersonalUser | undefined}) => {
                         <Link href="/login">Login</Link> 
                     </>
                     : <>
+                        <Link href="/app/u/me/events" style={{"position": "relative"}}>
+                            <Image alt="User Icon" src={"/events.svg"} width={0} height={0} sizes="100%" style={{
+                                "width": "2rem",
+                                "height": "2rem"
+                            }} />
+                        </Link>
                         <LogoutButton></LogoutButton>
                         <Link href="/app/u/me" className={style.profile}>
                             <span>{props.user.display_name}</span>
