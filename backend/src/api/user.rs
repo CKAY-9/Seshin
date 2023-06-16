@@ -12,7 +12,8 @@ pub struct FullAccount {
     public_id: String,
     joined_groups: Vec<String>,
     joined_events: Vec<String>,
-    display_name: String
+    display_name: String,
+    followers: Vec<String>
 }
 
 #[derive(Serialize)]
@@ -21,7 +22,7 @@ pub struct PublicAccount {
     oauth_type: String,
     avatar_url: String,
     display_name: String,
-    public_id: String
+    public_id: String,
 }
 
 pub async fn validate_user_token(postgres_client: &tokio_postgres::Client, token: &String) -> Result<bool, Box<dyn std::error::Error>> {
@@ -51,7 +52,7 @@ async fn get_public_info(_req: HttpRequest, path: web::Path<(String,)>) -> Resul
                     username,
                     avatar_url,
                     public_id,
-                    oauth_type
+                    oauth_type,
                 FROM
                     users
                 WHERE
@@ -102,7 +103,8 @@ async fn get_personal_info(_req: HttpRequest) -> Result<impl Responder, Box<dyn 
                 oauth_type: query[0].get(5),
                 public_id: query[0].get(6),
                 joined_groups: query[0].get(7),
-                joined_events: query[0].get(8)
+                joined_events: query[0].get(8),
+                followers: vec![]
             };
             Ok(HttpResponse::Ok().json(&user))
         },

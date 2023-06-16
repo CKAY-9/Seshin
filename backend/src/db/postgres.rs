@@ -49,7 +49,8 @@ pub async fn connect() -> Result<(), Error> {
             oauth_type TEXT NOT NULL,
             public_id TEXT NOT NULL UNIQUE,
             joined_groups TEXT[],
-            joined_events TEXT[]
+            joined_events TEXT[],
+            followers TEXT[]
         )  
     ").await?;
 
