@@ -2,6 +2,7 @@
 
 import {fetchSearchData} from "@/api/search/fetch";
 import {EventPreview, TopicPreview, UserPreview} from "@/api/search/interfaces";
+import Footer from "@/components/footer/footer";
 import Image from "next/image";
 import Link from "next/link";
 import {BaseSyntheticEvent, useState} from "react";
@@ -73,6 +74,7 @@ const SearchClient = ({ children }: any) => {
                     {view === 0 && <Users data={users}></Users>}
                 </section>
             </main>
+            <Footer></Footer>
         </>
     );
 }

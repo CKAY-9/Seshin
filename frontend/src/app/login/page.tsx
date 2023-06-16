@@ -45,7 +45,7 @@ const Login = () => {
                         </div>
                         <span>Login using Discord</span>
                     </Link>
-                    <Link href={process.env.NEXT_PUBLIC_GITHUB_OAUTH || ""} style={{
+                    <Link href={`https://github.com/login/oauth/authorize?scope=user:email&client_id=${process.env.NEXT_PUBLIC_GITHUB_ID}`} style={{
                         "backgroundColor": "#333",
                         "padding": "1rem 3rem",
                         "borderRadius": "10px",

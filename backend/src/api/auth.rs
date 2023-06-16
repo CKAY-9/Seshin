@@ -1,5 +1,5 @@
 use std::{env, process, collections::HashMap};
-use actix_web::{web::{self, Redirect}, get, Responder, HttpRequest};
+use actix_web::{web::{self, Redirect}, get, Responder, HttpRequest, HttpResponse};
 use serde::{Deserialize, Serialize};
 use sha2::{Sha256, Digest};
 use rand::prelude::*;
@@ -143,9 +143,58 @@ async fn auth_discord(req: web::Query<DiscordAuthRes>, _req: HttpRequest) -> imp
     Redirect::to(login_url_finish).see_other()
 }
 
+#[derive(Serialize, Deserialize)]
+struct GithubAuthRes {
+    code: String
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct GithubInitialRes {
+    data: String 
+}
+
+async fn fetch_github(code: String) -> Result<String, Box<dyn std::error::Error>> {
+    let client = reqwest::Client::new();
+    let client_id = env::var("GITHUB_OAUTH_ID").unwrap_or_else(|e| {
+        println!("{}", e);
+        process::exit(1)
+    });
+    let client_secret = env::var("GITHUB_OAUTH_SECRET").unwrap_or_else(|e| {
+        println!("{}", e);
+        process::exit(1)
+    });
+
+    println!("{}", client_secret);
+
+    let initial_res = client.post("https://github.com/login/oauth/access_token")
+        .query(&[("code", &code), ("client_id", &client_id), ("client_secret", &client_secret)])
+        .send()
+        .await?;
+ 
+    let initial_parsed: GithubInitialRes = serde_json::from_str(initial_res.url().as_str())?;
+    
+    let user_res = client.get("https://api.github.com/user")
+        .header("authorization", format!("Bearer {}", initial_parsed.data).as_str())
+        .send()
+        .await?
+
+    let user_parsed: 
+
+    Ok("".to_string())
+}
+
+#[get("/github")]
+async fn auth_github(req: web::Query<GithubAuthRes>, _req: HttpRequest) -> impl Responder {
+    let req = req.into_inner();
+    println!("{:#?}", &req.code);
+    let token = fetch_github(req.code).await;
+    HttpResponse::Ok().body("Sent") 
+}
+
 pub fn config_auth(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/auth")
             .service(auth_discord)
+            .service(auth_github)
     );
 } 
