@@ -2,6 +2,7 @@ use std::process;
 use actix_web::{HttpServer, App};
 use db::postgres;
 use dotenv::dotenv;
+use actix_cors::Cors;
 
 pub mod db;
 pub mod api;
@@ -17,7 +18,12 @@ async fn main() -> std::io::Result<()> {
     println!("Connected to Postgres");
 
     HttpServer::new(|| {
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header();
         App::new()
+            .wrap(cors)
             .configure(api::config_api)   
     })
     .bind(("127.0.0.1", 3001))?

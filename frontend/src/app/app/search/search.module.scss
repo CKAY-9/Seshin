@@ -1,0 +1,63 @@
+.nav {
+    margin-top: 2rem;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+
+    border-bottom: 1px solid rgb(var(--bText));
+
+    button {
+        background-color: rgb(var(--bg));
+        border: none;
+        font-size: 1rem;
+        padding: 2rem;
+        transform: translateY(-5px);
+        flex: 1;
+
+        transition: 0.35s ease all;
+
+        &:hover {
+            cursor: pointer;
+            background-color: rgb(var(--fg));
+        }
+
+        &:active, &:focus {
+            transform: translateY(0px);
+            background-color: rgb(var(--accent));
+        }
+    }
+}
+
+.results {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(33%, 33%));
+    gap: 1rem;
+
+    .preview {
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border-radius: 2rem;
+        border: 1px solid rgb(var(--text));
+
+        .info {
+            display: flex;
+            flex-direction: column;
+        
+            .displayName {
+                color: rgb(var(--bText));
+                font-weight: 900;
+                font-size: 1.5rem;
+            }
+        }
+
+        &:hover {
+            color: initial;
+            cursor: pointer;
+            border-radius: 1rem;
+        }
+    }
+}

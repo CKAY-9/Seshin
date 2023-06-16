@@ -26,3 +26,17 @@
         }
     }
 }
+
+.logout {
+    background-color: transparent;
+    font-weight: 900;
+    font-size: 1rem;
+    color: rgb(var(--text));
+    transition: 0.35s ease all;
+    border: none;
+
+    &:hover {
+        color: rgb(var(--link));
+        cursor: pointer;
+    }
+}
