@@ -1,0 +1,28 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 5rem;
+
+    border-bottom: 1px solid (rgb(var(--bText)));
+
+    section {
+        display: flex;
+        gap: 3rem;
+    }
+
+    .profile {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        position: relative;
+        align-items: center;
+        text-transform: none;
+
+        img {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+        }
+    }
+}
