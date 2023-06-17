@@ -43,7 +43,7 @@ pub async fn connect() -> Result<(), Error> {
         CREATE TABLE IF NOT EXISTS users (
             token TEXT PRIMARY KEY,
             display_name TEXT,
-            email TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL,
             username TEXT NOT NULL,
             avatar_url TEXT NOT NULL,
             oauth_type TEXT NOT NULL,

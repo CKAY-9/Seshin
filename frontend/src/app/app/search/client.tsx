@@ -2,6 +2,7 @@
 
 import {fetchSearchData} from "@/api/search/fetch";
 import {EventPreview, TopicPreview, UserPreview} from "@/api/search/interfaces";
+import {PersonalUser} from "@/api/user/interfaces";
 import Footer from "@/components/footer/footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,15 +10,19 @@ import {BaseSyntheticEvent, useState} from "react";
 import style from "./search.module.scss";
 
 interface SubProps {
-    data: UserPreview[] | EventPreview[] | TopicPreview[]
+    data: UserPreview[] | EventPreview[] | TopicPreview[],
+    user: PersonalUser | undefined
 }
 
 const Users = (props: SubProps) => {
+    console.log(props);
+
     return (
         <>
             {(props.data as UserPreview[]).map((preview: UserPreview, index: number) => {
+                const isMe: boolean = (props.user !== undefined) && (props.user.public_id === preview.public_id);
                 return (
-                    <Link href={`/app/u/${preview.public_id}`} className={style.preview} key={index}>
+                    <Link href={`/app/u/${isMe ? "me" : "preview.public_id"}`} className={style.preview} key={index}>
                         <div style={{"position": "relative"}}>
                             <Image src={preview.avatar_url || ""} alt="User Icon" width={0} height={0} sizes="100%" style={{
                                 "width": "4rem",
@@ -26,7 +31,9 @@ const Users = (props: SubProps) => {
                             }}></Image>
                         </div>
                         <div className={style.info}>
-                            <span className={style.displayName}>{preview.display_name}</span>
+                            <span className={style.displayName}>{preview.display_name}{isMe && 
+                                <span style={{"opacity": "0.5", "marginLeft": "0.5rem"}}>(You)</span>
+                            }</span>
                             <span className={style.username}>{preview.username}</span>
                         </div>
                     </Link>
@@ -36,7 +43,7 @@ const Users = (props: SubProps) => {
     );
 }
 
-const SearchClient = ({ children }: any) => {
+const SearchClient = (props: {user: PersonalUser | undefined}, {children}: any) => {
     const [searchIndex, setSearchIndex] = useState<number>(0); // This is increased by 10 on the server to fetch further items
     const [searchQuery, setSearchQuery] = useState<string>("");
     
@@ -71,7 +78,7 @@ const SearchClient = ({ children }: any) => {
                 </nav>
             
                 <section className={style.results}>
-                    {view === 0 && <Users data={users}></Users>}
+                    {view === 0 && <Users data={users} user={props.user}></Users>}
                 </section>
             </main>
             <Footer></Footer>
