@@ -22,7 +22,7 @@ const Users = (props: SubProps) => {
             {(props.data as UserPreview[]).map((preview: UserPreview, index: number) => {
                 const isMe: boolean = (props.user !== undefined) && (props.user.public_id === preview.public_id);
                 return (
-                    <Link href={`/app/u/${isMe ? "me" : "preview.public_id"}`} className={style.preview} key={index}>
+                    <Link href={`/app/u/${isMe ? "me" : preview.public_id}`} className={style.preview} key={index}>
                         <div style={{"position": "relative"}}>
                             <Image src={preview.avatar_url || ""} alt="User Icon" width={0} height={0} sizes="100%" style={{
                                 "width": "4rem",

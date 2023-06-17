@@ -51,7 +51,19 @@ pub async fn connect() -> Result<(), Error> {
             joined_groups TEXT[],
             joined_events TEXT[],
             followers TEXT[]
-        )  
+        ); 
+    ").await?;
+
+    client.batch_execute("
+        CREATE TABLE IF NOT EXISTS events (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT NOT NULL,
+            organizers TEXT[],
+            members TEXT[],
+            private BOOLEAN NOT NULL,
+            time BIGSERIAL NOT NULL
+        );
     ").await?;
 
     Ok(())
