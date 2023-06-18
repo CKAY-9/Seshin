@@ -1,5 +1,5 @@
 use std::{env, process, collections::HashMap};
-use actix_web::{web::{self, Redirect}, get, Responder, HttpRequest};
+use actix_web::{web::{self, Redirect}, get, Responder, HttpRequest, HttpResponse};
 use serde::{Deserialize, Serialize};
 use sha2::{Sha256, Digest};
 use rand::prelude::*;
@@ -129,7 +129,8 @@ async fn fetch_discord(data: DiscordInitialReq, endpoint: &String) -> Result<Str
                     public_id, 
                     joined_groups, 
                     joined_events,
-                    followers
+                    followers,
+                    usergroup
                 )
                 VALUES (
                     '{}', 
@@ -141,7 +142,8 @@ async fn fetch_discord(data: DiscordInitialReq, endpoint: &String) -> Result<Str
                     '{}', 
                     '{{}}', 
                     '{{}}',
-                    '{{}}'
+                    '{{}}',
+                    'user'
                 );
             ", token, user_parsed.username, user_parsed.email, user_parsed.username, user_parsed.id, user_parsed.avatar, user_parsed.id).as_str()).await?;
         }
@@ -154,16 +156,25 @@ async fn fetch_discord(data: DiscordInitialReq, endpoint: &String) -> Result<Str
 async fn auth_discord(req: web::Query<DiscordAuthRes>, _req: HttpRequest) -> impl Responder {
     let req = req.into_inner();    
 
+    let frontend_url: String = env::var("FRONTEND_URL").unwrap_or_else(|e| {
+        println!("{}", e);
+        "http://localhost:3000".to_string()
+    });
+
     let endpoint: String = "https://discord.com/api/v10".to_string();
+    
     let id: String = env::var("DISCORD_OAUTH_ID").unwrap_or_else(|e| {
-        println!("We broke...\n{e}");
+        println!("{}", e);
         process::exit(1);
     });
+
     let secret: String = env::var("DISCORD_OAUTH_SECRET").unwrap_or_else(|e| {
-        println!("We broke...\n{e}");
+        println!("{}", e);
         process::exit(1);
     });
+    
     let redirect: String = "http://127.0.0.1:3001/api/auth/discord".to_string();
+    
     let code = req.code;
 
     let data = DiscordInitialReq {
@@ -177,11 +188,6 @@ async fn auth_discord(req: web::Query<DiscordAuthRes>, _req: HttpRequest) -> imp
     let token = fetch_discord(data, &endpoint).await.unwrap_or_else(|e| {
         println!("Broke\n{}", e);
         process::exit(1)
-    });
-
-    let frontend_url: String = env::var("FRONTEND_URL").unwrap_or_else(|e| {
-        println!("{}", e);
-        "http://localhost:3000".to_string()
     });
 
     let mut login_url_finish: String = String::from(frontend_url);
@@ -287,7 +293,8 @@ async fn fetch_github(code: String) -> Result<String, Box<dyn std::error::Error>
                     public_id, 
                     joined_groups, 
                     joined_events,
-                    followers
+                    followers,
+                    usergroup
                 )
                 VALUES (
                     '{}', 
@@ -299,7 +306,8 @@ async fn fetch_github(code: String) -> Result<String, Box<dyn std::error::Error>
                     '{}', 
                     '{{}}', 
                     '{{}}',
-                    '{{}}'
+                    '{{}}',
+                    'user'
                 );
             ", token, user_parsed.login, email, user_parsed.login, user_parsed.avatar_url, user_parsed.id.to_string()).as_str()).await?;
         }

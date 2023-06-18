@@ -50,7 +50,8 @@ pub async fn connect() -> Result<(), Error> {
             public_id TEXT NOT NULL UNIQUE,
             joined_groups TEXT[],
             joined_events TEXT[],
-            followers TEXT[]
+            followers TEXT[],
+            usergroup SMALLSERIAL
         ); 
     ").await?;
 

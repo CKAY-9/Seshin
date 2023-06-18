@@ -1,6 +1,15 @@
-use actix_web::{web, get, Responder, HttpResponse, HttpRequest};
-use serde::Serialize;
+use actix_web::{web, get, Responder, HttpResponse, HttpRequest, delete};
+use serde::{Serialize, Deserialize};
 use crate::db::postgres::generate_client;
+
+#[derive(Serialize, Deserialize)]
+pub enum Usergroup {
+    USER,
+    TRUSTED,
+    SUPPORTER,
+    STAFF,
+    DEVELOPER
+}
 
 #[derive(Serialize)]
 pub struct FullAccount {
@@ -13,7 +22,8 @@ pub struct FullAccount {
     joined_groups: Vec<String>,
     joined_events: Vec<String>,
     display_name: String,
-    followers: Vec<String>
+    followers: Vec<String>,
+    usergroup: Usergroup
 }
 
 #[derive(Serialize)]
@@ -23,7 +33,8 @@ pub struct PublicAccount {
     avatar_url: String,
     display_name: String,
     public_id: String,
-    followers: Vec<String>
+    followers: Vec<String>,
+    usergroup: u32
 }
 
 pub async fn validate_user_token(postgres_client: &tokio_postgres::Client, token: &String) -> Result<bool, Box<dyn std::error::Error>> {
@@ -54,7 +65,8 @@ async fn get_public_info(_req: HttpRequest, path: web::Path<(String,)>) -> Resul
                     avatar_url,
                     public_id,
                     oauth_type,
-                    followers
+                    followers,
+                    usergroup
                 FROM
                     users
                 WHERE
@@ -64,12 +76,13 @@ async fn get_public_info(_req: HttpRequest, path: web::Path<(String,)>) -> Resul
             match user_query.get(0).is_some() {
                 true => {
                     let public_user = PublicAccount {
-                        display_name: user_query[0].get(0),
-                        username: user_query[0].get(1),
-                        avatar_url: user_query[0].get(2),
-                        public_id: user_query[0].get(3),
-                        oauth_type: user_query[0].get(4),
-                        followers: user_query[0].get(5)
+                        display_name: user_query[0].get::<usize, String>(0),
+                        username: user_query[0].get::<usize, String>(1),
+                        avatar_url: user_query[0].get::<usize, String>(2),
+                        public_id: user_query[0].get::<usize, String>(3),
+                        oauth_type: user_query[0].get::<usize, String>(4),
+                        followers: user_query[0].get::<usize, Vec<String>>(5),
+                        usergroup: user_query[0].get::<usize, u32>(6)
                     };
 
                     Ok(HttpResponse::Ok().json(&public_user))
@@ -107,7 +120,8 @@ async fn get_personal_info(_req: HttpRequest) -> Result<impl Responder, Box<dyn 
                 public_id: query[0].get(6),
                 joined_groups: query[0].get(7),
                 joined_events: query[0].get(8),
-                followers: query[0].get(9) 
+                followers: query[0].get(9),
+                usergroup: query[0].get::<usize, Usergroup>(10)
             };
             Ok(HttpResponse::Ok().json(&user))
         },
@@ -115,6 +129,12 @@ async fn get_personal_info(_req: HttpRequest) -> Result<impl Responder, Box<dyn 
             Ok(HttpResponse::Unauthorized().body("Invalid token"))
         }
     }
+}
+
+// Removes all user data and associated data (events, topics, etc.)
+#[delete("/delete")]
+async fn delete_user_data() -> Result<impl Responder, Box<dyn std::error::Error>> {
+    let token = 
 }
 
 pub fn config_user(cfg: &mut web::ServiceConfig) {

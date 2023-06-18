@@ -169,7 +169,7 @@ async fn create_new_event(_req: HttpRequest, req: web::Json<EventCreationData>) 
             '{}',
             '{}'
         )
-    ", id, req.name, req.description, user_query[0].get::<usize, String>(0), user_query[0].get::<usize, String>(0), req.private, req.time).as_str());
+    ", id, req.name, req.description, user_query[0].get::<usize, String>(0), user_query[0].get::<usize, String>(0), req.private, req.time).as_str()).await?;
 
     let mut response = HashMap::new();
     response.insert("event_id", id);
