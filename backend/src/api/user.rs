@@ -23,7 +23,7 @@ pub struct FullAccount {
     joined_events: Vec<String>,
     display_name: String,
     followers: Vec<String>,
-    usergroup: Usergroup
+    usergroup: u32
 }
 
 #[derive(Serialize)]
@@ -121,7 +121,7 @@ async fn get_personal_info(_req: HttpRequest) -> Result<impl Responder, Box<dyn 
                 joined_groups: query[0].get(7),
                 joined_events: query[0].get(8),
                 followers: query[0].get(9),
-                usergroup: query[0].get::<usize, Usergroup>(10)
+                usergroup: query[0].get::<usize, u32>(10)
             };
             Ok(HttpResponse::Ok().json(&user))
         },
@@ -133,8 +133,34 @@ async fn get_personal_info(_req: HttpRequest) -> Result<impl Responder, Box<dyn 
 
 // Removes all user data and associated data (events, topics, etc.)
 #[delete("/delete")]
-async fn delete_user_data() -> Result<impl Responder, Box<dyn std::error::Error>> {
-    let token = 
+async fn delete_user_data(_req: HttpRequest) -> Result<impl Responder, Box<dyn std::error::Error>> {
+    let token = _req.headers().get("authorization").unwrap().to_str().unwrap();
+    let postgres = generate_client().await?;
+    let validation = validate_user_token(&postgres, &token.to_string()).await?;
+
+    if !validation {
+        return Ok(HttpResponse::Unauthorized().body("Token not found"));
+    }
+
+    let user_id_query = postgres
+        .query(format!("
+            SELECT
+                public_id
+            FROM
+                users
+            WHERE
+                token='{}';
+        ", token).as_str(), &[])
+        .await?;
+
+    let user_id = user_id_query[0].get::<usize, String>(0);
+    if user_id.is_empty() {
+        return Ok(HttpResponse::BadRequest().body("Token couldn't find user ID"));
+    }
+
+    // TODO: Remove user from DB, Remove user from existing events
+
+    Ok(HttpResponse::Ok().body("Deleted user"))
 }
 
 pub fn config_user(cfg: &mut web::ServiceConfig) {

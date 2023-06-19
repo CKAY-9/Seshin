@@ -143,7 +143,7 @@ async fn fetch_discord(data: DiscordInitialReq, endpoint: &String) -> Result<Str
                     '{{}}', 
                     '{{}}',
                     '{{}}',
-                    'user'
+                    '0' 
                 );
             ", token, user_parsed.username, user_parsed.email, user_parsed.username, user_parsed.id, user_parsed.avatar, user_parsed.id).as_str()).await?;
         }
@@ -307,7 +307,7 @@ async fn fetch_github(code: String) -> Result<String, Box<dyn std::error::Error>
                     '{{}}', 
                     '{{}}',
                     '{{}}',
-                    'user'
+                    '0'
                 );
             ", token, user_parsed.login, email, user_parsed.login, user_parsed.avatar_url, user_parsed.id.to_string()).as_str()).await?;
         }
